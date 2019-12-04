@@ -29,6 +29,7 @@ export default class Feed extends Component {
   state = {
     feed: [],
   };
+
   async componentDidMount() {
     this.registerToSocket();
     const Response = await api.get('posts');
@@ -36,7 +37,7 @@ export default class Feed extends Component {
   }
 
   registerToSocket = () => {
-    const socket = io('http://10.0.2.2:3333');
+    const socket = io('http://localhost:3333');
 
     socket.on('post', newPost => {
       this.setState({feed: [newPost, ...this.state.feed]});
@@ -64,14 +65,15 @@ export default class Feed extends Component {
             <View style={styles.feedItem}>
               <View style={styles.feedItemHeader}>
                 <View style={styles.userInfo}>
-                  <Text style={styles.place}>{item.place}</Text>
+                  <Text style={styles.location}>{item.location}</Text>
+                  <Text style={styles.description}>{item.description}</Text>
                 </View>
               </View>
 
               <Image
                 style={styles.feedImage}
                 source={{
-                  uri: `http://10.0.2.2:3333/files/${item.image}`,
+                  uri: `http://localhost:3333/files/${item.image}`,
                 }}
               />
 
@@ -84,13 +86,16 @@ export default class Feed extends Component {
                     }}>
                     <IconAnt name="hearto" size={25} color="#000" />
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.action}>
+                  <TouchableOpacity
+                    style={styles.action}
+                    onPress={() =>
+                      this.props.navigation.navigate('Comment', {id: item._id})
+                    }>
                     <IconFon name="comment-o" size={25} color="#000" />
                   </TouchableOpacity>
                 </View>
 
                 <Text style={styles.likes}>{item.likes} Curtidas</Text>
-                <Text style={styles.description}>{item.description}</Text>
               </View>
             </View>
           )}
